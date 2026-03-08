@@ -10,8 +10,9 @@ export interface QuoteData {
   markupPct: number;
   companyName?: string;
   notes?: string;
-  isPro?: boolean; 
-  logoUrl?: string;
+  isPro?: boolean;
+  logoBase64?: string;    // optional base64 logo string (Pro only)
+  brandColor?: string;    // optional custom brand color (Pro only), defaults to emerald
 }
 
 export async function downloadPdfQuote(data: QuoteData): Promise<void> {
@@ -28,47 +29,97 @@ export async function downloadPdfQuote(data: QuoteData): Promise<void> {
   const isFree = !data.isPro;
   const { subtotal, markupAmount, grandTotal } = calcTotals(activeMaterials, data.markupPct);
 
-  const DARK = "#0f172a";
-  const EMERALD = "#10b981";
-  const WHITE = "#ffffff";
-  const GRAY = "#94a3b8";
+  const DARK    = "#0f172a";
+  const EMERALD = data.brandColor ?? "#10b981";  // Pro can customise
+  const WHITE   = "#ffffff";
+  const GRAY    = "#94a3b8";
   const ROW_ALT = "#f1f5f9";
 
+  // ── Materials table ────────────────────────────────────────────────────────
   const tableBody: unknown[][] = [
     [
-      { text: "Material", bold: true, fontSize: 9, color: WHITE, fillColor: DARK, margin: [6, 8, 6, 8] },
-      { text: "Unit", bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "center", margin: [6, 8, 6, 8] },
-      { text: "Unit Cost", bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "right", margin: [6, 8, 6, 8] },
-      { text: "Qty", bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "center", margin: [6, 8, 6, 8] },
-      { text: "Line Total", bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "right", margin: [6, 8, 6, 8] },
+      { text: "Material",   bold: true, fontSize: 9, color: WHITE, fillColor: DARK, margin: [6, 8, 6, 8] },
+      { text: "Unit",       bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "center", margin: [6, 8, 6, 8] },
+      { text: "Unit Cost",  bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "right",  margin: [6, 8, 6, 8] },
+      { text: "Qty",        bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "center", margin: [6, 8, 6, 8] },
+      { text: "Line Total", bold: true, fontSize: 9, color: WHITE, fillColor: DARK, alignment: "right",  margin: [6, 8, 6, 8] },
     ],
     ...activeMaterials.map((m, i) => {
       const fill = i % 2 === 0 ? WHITE : ROW_ALT;
       return [
-        { text: m.name, fontSize: 10, fillColor: fill, margin: [6, 6, 6, 6] },
-        { text: m.unit, fontSize: 10, alignment: "center", fillColor: fill, margin: [6, 6, 6, 6] },
-        { text: formatCurrency(m.costPerUnit), fontSize: 10, alignment: "right", fillColor: fill, margin: [6, 6, 6, 6] },
-        { text: m.quantity.toString(), fontSize: 10, alignment: "center", fillColor: fill, margin: [6, 6, 6, 6] },
+        { text: m.name,                                    fontSize: 10, fillColor: fill, margin: [6, 6, 6, 6] },
+        { text: m.unit,                                    fontSize: 10, alignment: "center", fillColor: fill, margin: [6, 6, 6, 6] },
+        { text: formatCurrency(m.costPerUnit),             fontSize: 10, alignment: "right",  fillColor: fill, margin: [6, 6, 6, 6] },
+        { text: m.quantity.toString(),                     fontSize: 10, alignment: "center", fillColor: fill, margin: [6, 6, 6, 6] },
         { text: formatCurrency(m.quantity * m.costPerUnit), fontSize: 10, bold: true, alignment: "right", fillColor: fill, margin: [6, 6, 6, 6] },
       ];
     }),
   ];
 
-  const docDefinition = {
-    pageSize: "LETTER" as const,
-    pageMargins: [48, 48, 48, 48] as [number, number, number, number],
-    defaultStyle: { font: "Roboto", fontSize: 10, color: "#1e293b" },
-    content: [
-      // Header
-      { canvas: [{ type: "rect", x: -48, y: -48, w: 800, h: 90, color: DARK }], absolutePosition: { x: 0, y: 0 } },
+  // ── Header: logo (Pro) vs text logo ───────────────────────────────────────
+  const leftHeader = data.isPro && data.logoBase64
+    ? {
+        image: data.logoBase64,
+        width: 120,
+        margin: [0, 0, 0, 0],
+      }
+    : {
+        stack: [
+          { text: "ForgeCost", fontSize: 26, bold: true, color: EMERALD },
+          { text: `${data.trade.toUpperCase()} MATERIAL QUOTE`, fontSize: 11, color: GRAY },
+        ],
+      };
+
+  // ── Footer content (used both inline and as absolutePosition) ─────────────
+  const footerContent = (currentPage: number, pageCount: number) => ({
+    stack: [
+      {
+        canvas: [{
+          type: "rect" as const,
+          x: 0, y: 0, w: 516, h: 3,
+          color: EMERALD, r: 2,
+        }],
+        margin: [48, 0, 48, 6],
+      },
       {
         columns: [
           {
-            stack: [
-              { text: "ForgeCost", fontSize: 26, bold: true, color: EMERALD },
-              { text: `${data.trade.toUpperCase()} MATERIAL QUOTE`, fontSize: 11, color: GRAY },
-            ],
+            text: isFree
+              ? "Generated with ForgeCost Free — upgrade to Pro to remove this"
+              : `Generated by ForgeCost${data.companyName ? ` for ${data.companyName}` : ""}`,
+            fontSize: 7,
+            color: isFree ? "#cbd5e1" : GRAY,
+            italics: isFree,
           },
+          {
+            text: `${data.date} · Quote valid for 30 days · Page ${currentPage} of ${pageCount}`,
+            fontSize: 7,
+            color: GRAY,
+            alignment: "right",
+          },
+        ],
+        margin: [48, 0, 48, 0],
+      },
+    ],
+  });
+
+  const docDefinition = {
+    pageSize: "LETTER" as const,
+    pageMargins: [48, 48, 48, 64] as [number, number, number, number],
+    defaultStyle: { font: "Roboto", fontSize: 10, color: "#1e293b" },
+
+    // ── True page footer — always at very bottom ────────────────────────────
+    footer: footerContent,
+
+    content: [
+      // ── Dark header bar ──────────────────────────────────────────────────
+      {
+        canvas: [{ type: "rect" as const, x: -48, y: -48, w: 800, h: 90, color: DARK }],
+        absolutePosition: { x: 0, y: 0 },
+      },
+      {
+        columns: [
+          leftHeader,
           {
             stack: [
               { text: data.companyName?.toUpperCase() ?? "", fontSize: 11, bold: true, color: WHITE, alignment: "right" },
@@ -78,32 +129,78 @@ export async function downloadPdfQuote(data: QuoteData): Promise<void> {
         ],
         margin: [0, 0, 0, 32],
       },
-      // Job details
+
+      // ── Job details row ──────────────────────────────────────────────────
       {
         columns: [
-          { stack: [{ text: "JOB NAME", fontSize: 8, bold: true, color: GRAY, characterSpacing: 1.5, margin: [0, 0, 0, 2] }, { text: data.jobName || "—", fontSize: 13, bold: true }], width: "*" },
-          { stack: [{ text: "DATE", fontSize: 8, bold: true, color: GRAY, characterSpacing: 1.5, margin: [0, 0, 0, 2] }, { text: data.date, fontSize: 13, bold: true }], width: "auto" },
+          {
+            stack: [
+              { text: "JOB NAME", fontSize: 8, bold: true, color: GRAY, characterSpacing: 1.5, margin: [0, 0, 0, 2] },
+              { text: data.jobName || "—", fontSize: 13, bold: true },
+            ],
+            width: "*",
+          },
+          {
+            stack: [
+              { text: "DATE", fontSize: 8, bold: true, color: GRAY, characterSpacing: 1.5, margin: [0, 0, 0, 2] },
+              { text: data.date, fontSize: 13, bold: true },
+            ],
+            width: "auto",
+          },
         ],
         margin: [0, 0, 0, 20],
       },
-      // Divider
-      { canvas: [{ type: "line", x1: 0, y1: 0, x2: 516, y2: 0, lineWidth: 2, lineColor: EMERALD }], margin: [0, 0, 0, 16] },
-      // Table
-      activeMaterials.length > 0 ? {
-        table: { headerRows: 1, widths: ["*", 60, 75, 40, 80], body: tableBody },
-        layout: { hLineWidth: (i: number) => i <= 1 ? 0 : 0.5, vLineWidth: () => 0, hLineColor: () => "#1e293b", paddingLeft: () => 0, paddingRight: () => 0 },
-        margin: [0, 0, 0, 20],
-      } : { text: "No materials selected.", fontSize: 9, italics: true, margin: [0, 0, 0, 20] },
-      // Totals
+
+      // ── Divider ──────────────────────────────────────────────────────────
+      {
+        canvas: [{ type: "line" as const, x1: 0, y1: 0, x2: 516, y2: 0, lineWidth: 2, lineColor: EMERALD }],
+        margin: [0, 0, 0, 16],
+      },
+
+      // ── Materials table ──────────────────────────────────────────────────
+      activeMaterials.length > 0
+        ? {
+            table: {
+              headerRows: 1,
+              widths: ["*", 60, 75, 40, 80],
+              body: tableBody,
+            },
+            layout: {
+              hLineWidth: (i: number) => i <= 1 ? 0 : 0.5,
+              vLineWidth: () => 0,
+              hLineColor: () => "#1e293b",
+              paddingLeft: () => 0,
+              paddingRight: () => 0,
+            },
+            margin: [0, 0, 0, 20],
+          }
+        : { text: "No materials selected.", fontSize: 9, italics: true, margin: [0, 0, 0, 20] },
+
+      // ── Totals block ─────────────────────────────────────────────────────
       {
         columns: [
           { width: "*", text: "" },
           {
             width: 240,
             stack: [
-              { columns: [{ text: "Subtotal", width: "*" }, { text: formatCurrency(subtotal), width: "auto", bold: true, alignment: "right" }], margin: [0, 0, 0, 6] },
-              { columns: [{ text: `Markup (${data.markupPct}%)`, width: "*" }, { text: `+ ${formatCurrency(markupAmount)}`, width: "auto", bold: true, color: EMERALD, alignment: "right" }], margin: [0, 0, 0, 10] },
-              { canvas: [{ type: "line", x1: 0, y1: 0, x2: 240, y2: 0, lineWidth: 1, lineColor: "#1e293b" }], margin: [0, 0, 0, 10] },
+              {
+                columns: [
+                  { text: "Subtotal", width: "*" },
+                  { text: formatCurrency(subtotal), width: "auto", bold: true, alignment: "right" },
+                ],
+                margin: [0, 0, 0, 6],
+              },
+              {
+                columns: [
+                  { text: `Markup (${data.markupPct}%)`, width: "*" },
+                  { text: `+ ${formatCurrency(markupAmount)}`, width: "auto", bold: true, color: EMERALD, alignment: "right" },
+                ],
+                margin: [0, 0, 0, 10],
+              },
+              {
+                canvas: [{ type: "line" as const, x1: 0, y1: 0, x2: 240, y2: 0, lineWidth: 1, lineColor: "#1e293b" }],
+                margin: [0, 0, 0, 10],
+              },
               {
                 fillColor: DARK,
                 table: {
@@ -120,27 +217,26 @@ export async function downloadPdfQuote(data: QuoteData): Promise<void> {
         ],
         margin: [0, 0, 0, 24],
       },
-      // Notes
+
+      // ── Notes ────────────────────────────────────────────────────────────
       ...(data.notes ? [
-        { canvas: [{ type: "line", x1: 0, y1: 0, x2: 516, y2: 0, lineWidth: 0.5, lineColor: "#1e293b" }], margin: [0, 0, 0, 10] },
+        {
+          canvas: [{ type: "line" as const, x1: 0, y1: 0, x2: 516, y2: 0, lineWidth: 0.5, lineColor: "#1e293b" }],
+          margin: [0, 0, 0, 10],
+        },
         { text: "NOTES", fontSize: 8, bold: true, color: GRAY, characterSpacing: 1.5, margin: [0, 0, 0, 4] },
         { text: data.notes, fontSize: 9, italics: true, color: "#475569" },
       ] : []),
-      // ── Free tier watermark ───────────────────────────────────────────────
-      ...(isFree ? [{
-        text: "Generated with ForgeCost Free — upgrade to Pro to remove watermark",
-        fontSize: 7,
-        color: "#94a3b8",
-        alignment: "center" as const,
-        margin: [0, 16, 0, 4] as [number, number, number, number],
-      }] : []),
-      // Footer
-      { text: `Generated by ForgeCost • ${data.date} • Quote valid for 30 days`, fontSize: 8, color: GRAY, alignment: "center", margin: [0, 32, 0, 8] },
-      { canvas: [{ type: "rect", x: 0, y: 0, w: 516, h: 3, color: EMERALD, r: 2 }] },
     ],
   };
 
-  const safeJob = (data.jobName || "quote").replace(/[^a-zA-Z0-9\s_-]/g, "").replace(/\s+/g, "_").toLowerCase();
+  const safeJob = (data.jobName || "quote")
+    .replace(/[^a-zA-Z0-9\s_-]/g, "")
+    .replace(/\s+/g, "_")
+    .toLowerCase();
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (pdfMake as any).createPdf(docDefinition).download(`ForgeCost_${safeJob}_${data.date.replace(/\//g, "-")}.pdf`);
+  (pdfMake as any).createPdf(docDefinition).download(
+    `ForgeCost_${safeJob}_${data.date.replace(/\//g, "-")}.pdf`
+  );
 }

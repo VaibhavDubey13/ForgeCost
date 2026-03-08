@@ -7,7 +7,7 @@ import {
   FileText, Sparkles, LogIn, LogOut, BookOpen,
   History, Save, User, X, Loader2, Crown,
   Wind, Paintbrush, Layers, Flame,
-  Mail,
+  Mail, Settings2,
 } from "lucide-react";
 
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -34,6 +34,7 @@ import {
   type UserProfile,
 } from "@/lib/subscription";
 import UpgradeModal from "@/components/UpgradeModal";
+import BrandingModal, { type BrandingSettings } from "@/components/BrandingModal";
 
 
 
@@ -112,6 +113,14 @@ export default function ForgeCostPage() {
 
   //email state
   const [emailModalOpen, setEmailModalOpen] = useState(false);
+
+  // branding state (Pro)
+  const [brandingModalOpen, setBrandingModalOpen] = useState(false);
+  const [brandingSettings, setBrandingSettings] = useState<BrandingSettings>({
+    logoBase64: null,
+    brandColor: "#10b981",
+    includeLogo: false,
+  });
 
 // Listen for auth state changes
 useEffect(() => {
@@ -233,7 +242,11 @@ if (user && userProfile && !isPro(userProfile)) {
       markupPct,
       companyName: companyName || undefined,
       notes: notes || undefined,
-      isPro: isPro(userProfile),   // ← add this line
+      isPro: isPro(userProfile),
+      logoBase64: isPro(userProfile) && brandingSettings.includeLogo && brandingSettings.logoBase64
+        ? brandingSettings.logoBase64
+        : undefined,
+      brandColor: isPro(userProfile) ? brandingSettings.brandColor : undefined,
     });
 
     // Save quote + increment counter if logged in
@@ -370,6 +383,14 @@ if (user && userProfile && !isPro(userProfile)) {
   />
 )}
 
+{brandingModalOpen && (
+  <BrandingModal
+    onClose={() => setBrandingModalOpen(false)}
+    onApply={(settings) => setBrandingSettings(settings)}
+    current={brandingSettings}
+  />
+)}
+
 
       {/* Header */}
       <header style={{ borderBottom: "1px solid hsl(222,35%,14%)", backgroundColor: "hsl(222,47%,5%)" }}>
@@ -431,10 +452,24 @@ if (user && userProfile && !isPro(userProfile)) {
                     >PRO</span>
                   )}
                 </div>                
+                {/* PDF Branding button — Pro only */}
+                {isPro(userProfile) && (
+                  <button
+                    onClick={() => setBrandingModalOpen(true)}
+                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all"
+                    style={{ color: "hsl(215,20%,55%)", background: "hsl(222,40%,9%)", border: "1px solid hsl(222,35%,16%)" }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "#fbbf24"; e.currentTarget.style.borderColor = "rgba(251,191,36,0.4)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "hsl(215,20%,55%)"; e.currentTarget.style.borderColor = "hsl(222,35%,16%)"; }}
+                  >
+                    <Settings2 className="w-3 h-3" /> PDF Branding
+                  </button>
+                )}
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all hover:text-red-400"
+                  className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all"
                   style={{ color: "hsl(215,20%,55%)", background: "hsl(222,40%,9%)", border: "1px solid hsl(222,35%,16%)" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "#f87171"; e.currentTarget.style.borderColor = "rgba(248,113,113,0.4)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "hsl(215,20%,55%)"; e.currentTarget.style.borderColor = "hsl(222,35%,16%)"; }}
                 >
                   <LogOut className="w-3 h-3" />
                   <span className="hidden sm:inline">Sign out</span>
@@ -445,6 +480,8 @@ if (user && userProfile && !isPro(userProfile)) {
                 onClick={() => setAuthModalOpen(true)}
                 className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full transition-all"
                 style={{ background: "#10b981", color: "white" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#059669")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#10b981")}
               >
                 <LogIn className="w-4 h-4" /> Sign in
               </button>
@@ -706,6 +743,7 @@ if (user && userProfile && !isPro(userProfile)) {
     setUpgradeModalOpen(true);
   }}
   onEmailClick={() => setEmailModalOpen(true)}
+  onBrandingClick={() => setBrandingModalOpen(true)}
 />
             </div>
           </div>
@@ -730,6 +768,7 @@ if (user && userProfile && !isPro(userProfile)) {
     setUpgradeModalOpen(true);
   }}
   onEmailClick={() => setEmailModalOpen(true)}
+  onBrandingClick={() => setBrandingModalOpen(true)}
 />
             </div>
           </div>
@@ -745,7 +784,7 @@ if (user && userProfile && !isPro(userProfile)) {
   );
 }
 
-function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload, pdfLoading, saveQuoteLoading, activeMaterialCount, user, userProfile, onAuthClick, onUpgradeClick, onEmailClick }: {
+function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload, pdfLoading, saveQuoteLoading, activeMaterialCount, user, userProfile, onAuthClick, onUpgradeClick, onEmailClick, onBrandingClick }: {
   subtotal: number; markupPct: number; markupAmount: number; grandTotal: number;
   onDownload: () => void; pdfLoading: boolean; saveQuoteLoading: boolean;
   activeMaterialCount: number; user: SupabaseUser | null;
@@ -753,6 +792,7 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
   onAuthClick: () => void;
   onUpgradeClick: (reason: "quotes" | "templates" | "history" | "branding") => void;
   onEmailClick: () => void;
+  onBrandingClick: () => void;
 }): React.ReactNode {
   return (
   <>
@@ -879,10 +919,19 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
       <div className="rounded-xl p-3 flex items-center gap-3"
         style={{ border: "1px solid rgba(16,185,129,0.25)", background: "rgba(16,185,129,0.06)" }}>
         <Crown className="w-4 h-4 flex-shrink-0" style={{ color: "#34d399" }} />
-        <div>
+        <div className="flex-1">
           <p className="text-xs font-bold" style={{ color: "#34d399" }}>Pro Plan Active</p>
           <p className="text-xs" style={{ color: "hsl(215,20%,55%)" }}>Unlimited everything ✓</p>
         </div>
+        <button
+          onClick={onBrandingClick}
+          className="flex items-center gap-1.5 text-xs px-2.5 py-1.5 rounded-lg transition-all"
+          style={{ border: "1px solid rgba(251,191,36,0.3)", color: "#fbbf24", background: "rgba(251,191,36,0.06)" }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(251,191,36,0.15)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(251,191,36,0.06)")}
+        >
+          <Settings2 className="w-3 h-3" /> Branding
+        </button>
       </div>
     )}
 
