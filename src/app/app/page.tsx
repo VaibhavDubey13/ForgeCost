@@ -7,6 +7,7 @@ import {
   FileText, Sparkles, LogIn, LogOut, BookOpen,
   History, Save, User, X, Loader2, Crown,
   Wind, Paintbrush, Layers, Flame,
+  Mail,
 } from "lucide-react";
 
 import type { User as SupabaseUser } from "@supabase/supabase-js";
@@ -22,6 +23,8 @@ import AuthModal from "@/components/AuthModal";
 import TemplatesPanel from "@/components/TemplatesPanel";
 import QuoteHistory from "@/components/QuoteHistory";
 
+import EmailQuoteModal from "@/components/EmailQuoteModal";
+
 import {
   getUserProfile,
   isPro,
@@ -31,6 +34,7 @@ import {
   type UserProfile,
 } from "@/lib/subscription";
 import UpgradeModal from "@/components/UpgradeModal";
+
 
 
 const TRADE_ICONS: Record<Trade, React.ReactNode> = {
@@ -105,6 +109,9 @@ export default function ForgeCostPage() {
   const [upgradeReason, setUpgradeReason] = useState<"quotes" | "templates" | "history" | "branding">("quotes");
 
   const today = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+
+  //email state
+  const [emailModalOpen, setEmailModalOpen] = useState(false);
 
 // Listen for auth state changes
 useEffect(() => {
@@ -341,6 +348,29 @@ if (user && userProfile && !isPro(userProfile)) {
   )
 )}
 
+{emailModalOpen && (
+  <EmailQuoteModal
+    onClose={() => setEmailModalOpen(false)}
+    jobName={jobName}
+    companyName={companyName}
+    trade={selectedTrade}
+    date={today}
+    materials={materials}
+    markupPct={markupPct}
+    subtotal={subtotal}
+    markupAmount={markupAmount}
+    grandTotal={grandTotal}
+    notes={notes}
+    isPro={isPro(userProfile)}
+    onUpgradeClick={() => {
+      setEmailModalOpen(false);
+      setUpgradeReason("branding");
+      setUpgradeModalOpen(true);
+    }}
+  />
+)}
+
+
       {/* Header */}
       <header style={{ borderBottom: "1px solid hsl(222,35%,14%)", backgroundColor: "hsl(222,47%,5%)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
@@ -349,7 +379,7 @@ if (user && userProfile && !isPro(userProfile)) {
               <Calculator className="w-5 h-5" style={{ color: "#34d399" }} />
             </div>
             <div>
-              <span className="text-lg font-bold">Mat<span style={{ color: "#34d399" }}>Cost</span></span>
+              <span className="text-lg font-bold">Forge<span style={{ color: "#34d399" }}>Cost</span></span>
               <p className="text-xs" style={{ color: "hsl(215,20%,55%)", lineHeight: 1, marginTop: 2 }}>Material Cost Calculator</p>
             </div>
           </div>
@@ -675,6 +705,7 @@ if (user && userProfile && !isPro(userProfile)) {
     setUpgradeReason(reason);
     setUpgradeModalOpen(true);
   }}
+  onEmailClick={() => setEmailModalOpen(true)}
 />
             </div>
           </div>
@@ -698,6 +729,7 @@ if (user && userProfile && !isPro(userProfile)) {
     setUpgradeReason(reason);
     setUpgradeModalOpen(true);
   }}
+  onEmailClick={() => setEmailModalOpen(true)}
 />
             </div>
           </div>
@@ -718,8 +750,9 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
   onDownload: () => void; pdfLoading: boolean; saveQuoteLoading: boolean;
   activeMaterialCount: number; user: SupabaseUser | null;
   userProfile: UserProfile | null;
-  onAuthClick: () => void;
+  onAuthClick: () => void; 
   onUpgradeClick: (reason: "quotes" | "templates" | "history" | "branding") => void;
+  onEmailClick: () => void;
 }) {
   return (
   <>
@@ -753,6 +786,14 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
         <><Download className="w-5 h-5" /> Download PDF Quote</>
       )}
     </button>
+    <button
+    onClick={onEmailClick}
+    disabled={grandTotal === 0}
+    className="w-full flex items-center justify-center gap-2.5 font-semibold text-sm px-6 py-3 rounded-2xl transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+    style={{ border: "1px solid rgba(16,185,129,0.3)", color: "#34d399", background: "rgba(16,185,129,0.05)" }}
+  >
+    <Mail className="w-4 h-4" /> Email Quote to Customer
+  </button>
 
     {grandTotal === 0 && (
       <p className="text-xs text-center" style={{ color: "hsl(215,20%,55%)" }}>

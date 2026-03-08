@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://forge-cost.vercel.app/app";
 
     // Create checkout session with Dodo
     const { plan } = await req.json(); // already have userId, userEmail, userName
