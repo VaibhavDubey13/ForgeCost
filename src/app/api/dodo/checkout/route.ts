@@ -5,7 +5,7 @@ import { createClient } from "@supabase/supabase-js";
 
 const dodo = new DodoPayments({
   bearerToken: process.env.DODO_PAYMENTS_API_KEY!,
-  environment: "test_mode",
+  environment: "live_mode",  
 });
 
 // Server-side Supabase client with service role for writing profiles
