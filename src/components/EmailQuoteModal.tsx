@@ -32,11 +32,11 @@ export default function EmailQuoteModal({
   const [error, setError] = useState("");
 
   async function handleSend() {
-    if (!customerEmail.trim()) return;
+    if (!customerEmail.trim() || !jobName.trim()) return;
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/dodo/email/quote",{
+      const res = await fetch("/api/email/quote", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -179,7 +179,7 @@ export default function EmailQuoteModal({
 
             <button
               onClick={handleSend}
-              disabled={loading || !customerEmail.trim() || grandTotal === 0}
+              disabled={loading || !customerEmail.trim() || !jobName.trim() || grandTotal === 0}
               className="w-full flex items-center justify-center gap-2 font-bold py-4 rounded-xl transition-all disabled:opacity-40"
               style={{ background: "#10b981", color: "white" }}
               onMouseEnter={(e) => !loading && (e.currentTarget.style.background = "#059669")}
@@ -190,7 +190,13 @@ export default function EmailQuoteModal({
                 : <><Mail className="w-4 h-4" /> Send Quote</>
               }
             </button>
-            {grandTotal === 0 && (
+            {!jobName.trim() && (
+              <p className="text-xs text-center px-3 py-2 rounded-lg"
+                style={{ color: "#fbbf24", background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)" }}>
+                ⚠️ Please fill in a <strong>Job Name</strong> in the calculator before sending
+              </p>
+            )}
+            {jobName.trim() && grandTotal === 0 && (
               <p className="text-xs text-center" style={{ color: "hsl(215,20%,55%)" }}>
                 Add quantities to materials before sending
               </p>
