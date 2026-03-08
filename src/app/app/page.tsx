@@ -314,15 +314,25 @@ if (user && userProfile && !isPro(userProfile)) {
       {authModalOpen && (
         <AuthModal onClose={() => setAuthModalOpen(false)} onSuccess={() => showSaveSuccess("Signed in!")} />
         )}
-        {upgradeModalOpen && user && (
-          <UpgradeModal
-            onClose={() => setUpgradeModalOpen(false)}
-            userId={user.id}
-            userEmail={user.email ?? ""}
-            userName={companyName || undefined}
-            reason={upgradeReason}
-          />
-        )}
+        {upgradeModalOpen && (
+  user ? (
+    <UpgradeModal
+      onClose={() => setUpgradeModalOpen(false)}
+      userId={user.id}
+      userEmail={user.email ?? ""}
+      userName={companyName || undefined}
+      reason={upgradeReason}
+    />
+  ) : (
+    <AuthModal
+      onClose={() => setUpgradeModalOpen(false)}
+      onSuccess={() => {
+        setUpgradeModalOpen(false);
+        showSaveSuccess("Signed in! Now you can upgrade to Pro.");
+      }}
+    />
+  )
+)}
 
       {/* Header */}
       <header style={{ borderBottom: "1px solid hsl(222,35%,14%)", backgroundColor: "hsl(222,47%,5%)" }}>
