@@ -16,7 +16,7 @@ const supabaseAdmin = createClient(
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, userEmail, userName } = await req.json();
+    const { userId, userEmail, userName, plan } = await req.json();
 
     if (!userId || !userEmail) {
       return NextResponse.json(
@@ -27,9 +27,7 @@ export async function POST(req: NextRequest) {
 
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://forge-cost.vercel.app/app";
 
-    // Create checkout session with Dodo
-    const { plan } = await req.json(); // already have userId, userEmail, userName
-const productId = plan === "annual"
+    const productId = plan === "annual"
   ? process.env.NEXT_PUBLIC_DODO_ANNUAL_PRODUCT_ID!
   : process.env.NEXT_PUBLIC_DODO_PRODUCT_ID!;
 
