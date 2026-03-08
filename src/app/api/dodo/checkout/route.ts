@@ -28,13 +28,13 @@ export async function POST(req: NextRequest) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
     // Create checkout session with Dodo
-    const session = await dodo.checkoutSessions.create({
-      product_cart: [
-        {
-          product_id: process.env.NEXT_PUBLIC_DODO_PRODUCT_ID!,
-          quantity: 1,
-        },
-      ],
+    const { plan } = await req.json(); // already have userId, userEmail, userName
+const productId = plan === "annual"
+  ? process.env.NEXT_PUBLIC_DODO_ANNUAL_PRODUCT_ID!
+  : process.env.NEXT_PUBLIC_DODO_PRODUCT_ID!;
+
+const session = await dodo.checkoutSessions.create({
+  product_cart: [{ product_id: productId, quantity: 1 }],
       customer: {
         email: userEmail,
         name: userName ?? userEmail,

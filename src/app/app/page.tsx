@@ -72,7 +72,7 @@ function StatCard({ label, value, accent = false, large = false }: {
 
 type DrawerTab = "templates" | "history" | null;
 
-export default function MatCostPage() {
+export default function ForgeCostPage() {
   const [selectedTrade, setSelectedTrade] = useState<Trade>("Plumber");
   const [tradeDropdownOpen, setTradeDropdownOpen] = useState(false);
   const [jobName, setJobName] = useState("");
@@ -82,7 +82,7 @@ export default function MatCostPage() {
   const [materials, setMaterials] = useState<Material[]>(() => getDefaultMaterials("Plumber"));
   const [newMatName, setNewMatName] = useState("");
   const [newMatUnit, setNewMatUnit] = useState("");
-  const [newMatCost, setNewMatCost] = useState("");
+  const [newForgeCost, setNewForgeCost] = useState("");
   const [newMatQty, setNewMatQty] = useState("1");
   const [addFormOpen, setAddFormOpen] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -183,7 +183,7 @@ useEffect(() => {
   }, []);
 
   const addCustomMaterial = useCallback(() => {
-    const cost = parseFloat(newMatCost);
+    const cost = parseFloat(newForgeCost);
     const qty = parseFloat(newMatQty);
     if (!newMatName.trim() || isNaN(cost) || cost < 0) return;
     setMaterials((prev) => [...prev, {
@@ -191,20 +191,20 @@ useEffect(() => {
       unit: newMatUnit.trim() || "each", costPerUnit: cost,
       quantity: isNaN(qty) ? 1 : Math.max(0, qty), isCustom: true,
     }]);
-    setNewMatName(""); setNewMatUnit(""); setNewMatCost(""); setNewMatQty("1");
+    setNewMatName(""); setNewMatUnit(""); setNewForgeCost(""); setNewMatQty("1");
     setAddFormOpen(false);
-  }, [newMatName, newMatUnit, newMatCost, newMatQty]);
+  }, [newMatName, newMatUnit, newForgeCost, newMatQty]);
 
   const handleDownloadPdf = useCallback(async () => {
   // Check quote limit for free users
   // Anonymous users: limit to 2 downloads, then prompt sign in
 if (!user) {
-  const anonCount = parseInt(localStorage.getItem("matcost_anon_downloads") ?? "0");
+  const anonCount = parseInt(localStorage.getItem("ForgeCost_anon_downloads") ?? "0");
   if (anonCount >= 2) {
     setAuthModalOpen(true);
     return;
   }
-  localStorage.setItem("matcost_anon_downloads", String(anonCount + 1));
+  localStorage.setItem("ForgeCost_anon_downloads", String(anonCount + 1));
 }
 
 // Logged in free users: check quote limit
@@ -640,11 +640,11 @@ if (user && userProfile && !isPro(userProfile)) {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                       <DarkInput value={newMatName} onChange={setNewMatName} placeholder="Material name" className="sm:col-span-2" />
                       <DarkInput value={newMatUnit} onChange={setNewMatUnit} placeholder="Unit (e.g. ft)" />
-                      <DarkInput type="number" min="0" step="0.01" value={newMatCost} onChange={setNewMatCost} placeholder="Cost/unit $" />
+                      <DarkInput type="number" min="0" step="0.01" value={newForgeCost} onChange={setNewForgeCost} placeholder="Cost/unit $" />
                     </div>
                     <div className="flex items-center gap-2">
                       <DarkInput type="number" min="0" step="1" value={newMatQty} onChange={setNewMatQty} placeholder="Qty" className="w-28" />
-                      <button onClick={addCustomMaterial} disabled={!newMatName.trim() || !newMatCost}
+                      <button onClick={addCustomMaterial} disabled={!newMatName.trim() || !newForgeCost}
                         className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-lg disabled:opacity-40 transition-colors"
                         style={{ background: "#10b981", color: "white" }}
                       >
@@ -706,7 +706,7 @@ if (user && userProfile && !isPro(userProfile)) {
 
       <footer style={{ borderTop: "1px solid hsl(222,35%,14%)" }} className="py-8 text-center">
         <p className="text-xs" style={{ color: "hsl(215,20%,55%)" }}>
-          MatCost — Free for solo tradespeople. <span style={{ color: "#34d399" }}>Built to help you earn more.</span>
+          ForgeCost — Free for solo tradespeople. <span style={{ color: "#34d399" }}>Built to help you earn more.</span>
         </p>
       </footer>
     </div>
@@ -775,7 +775,7 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
         <div className="rounded-xl p-4" style={{ border: "1px solid rgba(251,191,36,0.2)", background: "rgba(251,191,36,0.04)" }}>
           <div className="flex items-center gap-2 mb-2">
             <Crown className="w-4 h-4" style={{ color: "#fbbf24" }} />
-            <span className="text-xs font-bold" style={{ color: "#fbbf24" }}>MatCost Pro — $12/mo</span>
+            <span className="text-xs font-bold" style={{ color: "#fbbf24" }}>ForgeCost Pro — $15/mo</span>
           </div>
           <p className="text-xs mb-3" style={{ color: "hsl(215,20%,55%)" }}>
             Unlimited quotes, custom PDF branding, saved templates & full history.
@@ -828,7 +828,7 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
           onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(251,191,36,0.12)")}
           onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(251,191,36,0.06)")}
         >
-          <Crown className="w-4 h-4" /> Upgrade to Pro — $12/mo
+          <Crown className="w-4 h-4" /> Upgrade to Pro — $15/mo
         </button>
       </>
     )}
