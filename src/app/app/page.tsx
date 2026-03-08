@@ -745,15 +745,15 @@ if (user && userProfile && !isPro(userProfile)) {
   );
 }
 
-function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload, pdfLoading, saveQuoteLoading, activeMaterialCount, user, userProfile, onAuthClick, onUpgradeClick }: {
+function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload, pdfLoading, saveQuoteLoading, activeMaterialCount, user, userProfile, onAuthClick, onUpgradeClick, onEmailClick }: {
   subtotal: number; markupPct: number; markupAmount: number; grandTotal: number;
   onDownload: () => void; pdfLoading: boolean; saveQuoteLoading: boolean;
   activeMaterialCount: number; user: SupabaseUser | null;
   userProfile: UserProfile | null;
-  onAuthClick: () => void; 
+  onAuthClick: () => void;
   onUpgradeClick: (reason: "quotes" | "templates" | "history" | "branding") => void;
   onEmailClick: () => void;
-}) {
+}): React.ReactNode {
   return (
   <>
     <div className="rounded-2xl p-5 space-y-3" style={{ border: "1px solid hsl(222,35%,16%)", background: "hsl(222,40%,9%)" }}>
