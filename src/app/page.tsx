@@ -9,6 +9,9 @@ import {
   Wind, Paintbrush, Layers, Flame, MoreHorizontal,
   Mail, Sparkles,
 } from "lucide-react";
+import ShareButton from "@/components/ShareButton";
+// Add inside the header, next to the sign in/out buttons:
+<ShareButton />
 
 function useCounter(end: number, duration = 2000, start = false) {
   const [count, setCount] = useState(0);

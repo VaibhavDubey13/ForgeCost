@@ -36,6 +36,9 @@ import {
 } from "@/lib/subscription";
 import UpgradeModal from "@/components/UpgradeModal";
 import BrandingModal, { type BrandingSettings } from "@/components/BrandingModal";
+import ShareButton from "@/components/ShareButton";
+// Add inside the header, next to the sign in/out buttons:
+<ShareButton />
 
 
 
