@@ -86,17 +86,23 @@ export default function AdminPage() {
 
   async function handleLogin() {
     setPwError("");
-    const res = await fetch("/api/admin-auth", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: pw }),
-    });
-    if (res.ok) {
-      sessionStorage.setItem("fc_admin_authed", "1");
-      setAuthed(true);
-      fetchData();
-    } else {
-      setPwError("Incorrect password.");
+    try {
+      const res = await fetch("/api/admin-auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: pw }),
+      });
+      const data = await res.json();
+      if (res.ok && data.ok) {
+        sessionStorage.setItem("fc_admin_authed", "1");
+        setAuthed(true);
+        fetchData();
+      } else {
+        setPwError(data.error ?? `Server error ${res.status} — check ADMIN_PASSWORD env var is set in Vercel.`);
+        setPw("");
+      }
+    } catch (err) {
+      setPwError(`Network error: ${String(err)} — make sure /api/admin-auth route is deployed.`);
       setPw("");
     }
   }
