@@ -5,6 +5,10 @@ export type Trade =
   | "Handyman"
   | "Landscaper"
   | "Tattoo Artist"
+  | "HVAC Technician"
+  | "Painter"
+  | "Carpenter"
+  | "Welder"
   | "Other";
 
 export const TRADES: Trade[] = [
@@ -13,6 +17,10 @@ export const TRADES: Trade[] = [
   "Handyman",
   "Landscaper",
   "Tattoo Artist",
+  "HVAC Technician",
+  "Painter",
+  "Carpenter",
+  "Welder",
   "Other",
 ];
 
@@ -126,6 +134,86 @@ const TATTOO_MATERIALS: Omit<Material, "id" | "quantity">[] = [
   { name: "Foam Pad / Armrest Cover", unit: "each", costPerUnit: 2.0 },
 ];
 
+const HVAC_MATERIALS: Omit<Material, "id" | "quantity">[] = [
+  { name: "Copper Line Set (3/8″)", unit: "ft", costPerUnit: 4.5 },
+  { name: "Copper Line Set (1/2″)", unit: "ft", costPerUnit: 5.8 },
+  { name: "Refrigerant R-410A (lb)", unit: "lb", costPerUnit: 18.0 },
+  { name: "Refrigerant R-32 (lb)", unit: "lb", costPerUnit: 14.0 },
+  { name: "Capacitor (45/5 MFD)", unit: "each", costPerUnit: 22.0 },
+  { name: "Contactor (2-Pole)", unit: "each", costPerUnit: 18.0 },
+  { name: "Thermostat (Programmable)", unit: "each", costPerUnit: 45.0 },
+  { name: "Thermostat (Smart)", unit: "each", costPerUnit: 120.0 },
+  { name: "Air Filter (16x20x1)", unit: "each", costPerUnit: 8.0 },
+  { name: "Air Filter (20x25x4)", unit: "each", costPerUnit: 28.0 },
+  { name: "Duct Tape (2″ foil)", unit: "roll", costPerUnit: 14.0 },
+  { name: "Flex Duct (6″ x 25ft)", unit: "each", costPerUnit: 32.0 },
+  { name: "Sheet Metal Duct (10″)", unit: "ft", costPerUnit: 6.5 },
+  { name: "Drain Pan", unit: "each", costPerUnit: 28.0 },
+  { name: "Condensate Drain Line", unit: "ft", costPerUnit: 1.2 },
+  { name: "Disconnect Box", unit: "each", costPerUnit: 35.0 },
+  { name: "Insulation Wrap (1″)", unit: "ft", costPerUnit: 1.8 },
+];
+
+const PAINTER_MATERIALS: Omit<Material, "id" | "quantity">[] = [
+  { name: "Interior Paint (1 gal)", unit: "gal", costPerUnit: 32.0 },
+  { name: "Exterior Paint (1 gal)", unit: "gal", costPerUnit: 42.0 },
+  { name: "Primer (1 gal)", unit: "gal", costPerUnit: 25.0 },
+  { name: "Spray Paint (12oz)", unit: "can", costPerUnit: 7.0 },
+  { name: "Paint Roller (9″)", unit: "each", costPerUnit: 8.0 },
+  { name: "Roller Cover (9″)", unit: "each", costPerUnit: 4.5 },
+  { name: "Paint Brush (2″)", unit: "each", costPerUnit: 6.0 },
+  { name: "Paint Brush (4″)", unit: "each", costPerUnit: 9.0 },
+  { name: "Paint Tray", unit: "each", costPerUnit: 4.0 },
+  { name: "Drop Cloth (4x15)", unit: "each", costPerUnit: 12.0 },
+  { name: "Painter's Tape (2″)", unit: "roll", costPerUnit: 5.5 },
+  { name: "Sandpaper (Pack)", unit: "pack", costPerUnit: 7.0 },
+  { name: "Caulk (Paintable)", unit: "tube", costPerUnit: 3.5 },
+  { name: "Putty/Spackle (qt)", unit: "qt", costPerUnit: 9.0 },
+  { name: "TSP Cleaner (lb)", unit: "lb", costPerUnit: 6.0 },
+  { name: "Paint Thinner (qt)", unit: "qt", costPerUnit: 8.0 },
+  { name: "Stain (1 gal)", unit: "gal", costPerUnit: 38.0 },
+];
+
+const CARPENTER_MATERIALS: Omit<Material, "id" | "quantity">[] = [
+  { name: "2×4 Stud (8ft)", unit: "each", costPerUnit: 4.5 },
+  { name: "2×6 (8ft)", unit: "each", costPerUnit: 7.0 },
+  { name: "2×8 (8ft)", unit: "each", costPerUnit: 9.5 },
+  { name: "Plywood (4×8, 3/4″)", unit: "sheet", costPerUnit: 52.0 },
+  { name: "OSB (4×8, 7/16″)", unit: "sheet", costPerUnit: 22.0 },
+  { name: "MDF (4×8, 3/4″)", unit: "sheet", costPerUnit: 38.0 },
+  { name: "Hardwood (Oak, bf)", unit: "bf", costPerUnit: 6.5 },
+  { name: "Hardwood (Pine, bf)", unit: "bf", costPerUnit: 3.8 },
+  { name: "Finish Nails (1lb)", unit: "lb", costPerUnit: 5.0 },
+  { name: "Framing Nails (1lb)", unit: "lb", costPerUnit: 4.5 },
+  { name: "Wood Screws (1lb)", unit: "lb", costPerUnit: 6.0 },
+  { name: "Wood Glue (16oz)", unit: "bottle", costPerUnit: 8.0 },
+  { name: "Construction Adhesive", unit: "tube", costPerUnit: 5.5 },
+  { name: "Sandpaper Pack", unit: "pack", costPerUnit: 7.0 },
+  { name: "Wood Stain (qt)", unit: "qt", costPerUnit: 14.0 },
+  { name: "Polyurethane (qt)", unit: "qt", costPerUnit: 16.0 },
+  { name: "Door Hinge (pair)", unit: "pair", costPerUnit: 6.5 },
+  { name: "Cabinet Hardware", unit: "each", costPerUnit: 4.0 },
+];
+
+const WELDER_MATERIALS: Omit<Material, "id" | "quantity">[] = [
+  { name: "Steel Flat Bar (1×1/8″)", unit: "ft", costPerUnit: 1.8 },
+  { name: "Steel Angle (1×1/8″)", unit: "ft", costPerUnit: 2.2 },
+  { name: "Steel Tube (1×1×1/8″)", unit: "ft", costPerUnit: 3.5 },
+  { name: "Steel Plate (1/4″)", unit: "sq ft", costPerUnit: 8.0 },
+  { name: "Stainless Steel Rod", unit: "ft", costPerUnit: 6.5 },
+  { name: "Aluminum Sheet (1/8″)", unit: "sq ft", costPerUnit: 12.0 },
+  { name: "MIG Wire (11lb spool)", unit: "spool", costPerUnit: 45.0 },
+  { name: "TIG Filler Rod (lb)", unit: "lb", costPerUnit: 22.0 },
+  { name: "Stick Electrode (lb)", unit: "lb", costPerUnit: 14.0 },
+  { name: "Shielding Gas (cu ft)", unit: "cu ft", costPerUnit: 0.8 },
+  { name: "Grinding Disc (4.5″)", unit: "each", costPerUnit: 3.5 },
+  { name: "Cutting Disc (4.5″)", unit: "each", costPerUnit: 2.8 },
+  { name: "Welding Wire Brush", unit: "each", costPerUnit: 5.0 },
+  { name: "Anti-Spatter Spray", unit: "can", costPerUnit: 8.0 },
+  { name: "Welding Gloves", unit: "pair", costPerUnit: 28.0 },
+];
+
+
 function buildMaterial(
   template: Omit<Material, "id" | "quantity">,
   quantity = 0
@@ -140,6 +228,10 @@ export function getDefaultMaterials(trade: Trade): Material[] {
     case "Handyman": return HANDYMAN_MATERIALS.map((m) => buildMaterial(m));
     case "Landscaper": return LANDSCAPER_MATERIALS.map((m) => buildMaterial(m));
     case "Tattoo Artist": return TATTOO_MATERIALS.map((m) => buildMaterial(m));
+    case "HVAC Technician": return HVAC_MATERIALS.map((m) => buildMaterial(m));
+    case "Painter": return PAINTER_MATERIALS.map((m) => buildMaterial(m));
+    case "Carpenter": return CARPENTER_MATERIALS.map((m) => buildMaterial(m));
+    case "Welder": return WELDER_MATERIALS.map((m) => buildMaterial(m));
     default: return [];
   }
 }

@@ -5,8 +5,10 @@ import {
   Wrench, Zap, Hammer, Leaf, Palette, MoreHorizontal,
   Plus, Trash2, Download, ChevronDown, Calculator,
   FileText, Sparkles, LogIn, LogOut, BookOpen,
-  History, Save, User, X, Loader2,Crown,
+  History, Save, User, X, Loader2, Crown,
+  Wind, Paintbrush, Layers, Flame,
 } from "lucide-react";
+
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 
 import { TRADES, getDefaultMaterials, calcTotals, formatCurrency, genId, type Trade, type Material } from "@/lib/trades";
@@ -37,6 +39,10 @@ const TRADE_ICONS: Record<Trade, React.ReactNode> = {
   Handyman: <Hammer className="w-4 h-4" />,
   Landscaper: <Leaf className="w-4 h-4" />,
   "Tattoo Artist": <Palette className="w-4 h-4" />,
+  "HVAC Technician": <Wind className="w-4 h-4" />,
+  Painter: <Paintbrush className="w-4 h-4" />,
+  Carpenter: <Layers className="w-4 h-4" />,
+  Welder: <Flame className="w-4 h-4" />,
   Other: <MoreHorizontal className="w-4 h-4" />,
 };
 
@@ -220,6 +226,7 @@ if (user && userProfile && !isPro(userProfile)) {
       markupPct,
       companyName: companyName || undefined,
       notes: notes || undefined,
+      isPro: isPro(userProfile),   // ← add this line
     });
 
     // Save quote + increment counter if logged in
