@@ -49,7 +49,7 @@ const TESTIMONIALS = [
     name: "Devon R.",
     trade: "Landscaper",
     location: "Portland, OR",
-    text: "As a solo operator I can't afford to overbuy or underbid. This tool pays for itself on the first job. And the free plan is genuinely unlimited.",
+    text: "As a solo operator I can't afford to overbuy or underbid. This tool pays for itself on the first job.",
     stars: 5,
     initials: "DR",
   },
@@ -155,7 +155,7 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden md:flex items-center gap-8">
-            {["Features", "Trades", "Pricing", "Testimonials"].map((item) => (
+            {["Features", "Trades", "Testimonials"].map((item) => (
               <a key={item} href={`#${item.toLowerCase()}`}
                 className="text-sm transition-colors"
                 style={{ color: "hsl(215,20%,55%)" }}
@@ -165,6 +165,14 @@ export default function LandingPage() {
                 {item}
               </a>
             ))}
+            <Link href="/pricing"
+              className="text-sm transition-colors"
+              style={{ color: "hsl(215,20%,55%)" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(215,20%,55%)")}
+            >
+              Pricing
+            </Link>
           </div>
 
           <div className="hidden md:flex items-center gap-3">
@@ -186,11 +194,14 @@ export default function LandingPage() {
 
         {mobileMenuOpen && (
           <div className="md:hidden px-4 pb-4 space-y-2" style={{ borderTop: "1px solid hsl(222,35%,12%)" }}>
-            {["Features", "Trades", "Pricing", "Testimonials"].map((item) => (
+            {["Features", "Trades", "Testimonials"].map((item) => (
               <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)}
                 className="block py-2.5 text-sm" style={{ color: "hsl(215,20%,65%)", borderBottom: "1px solid hsl(222,35%,12%)" }}
               >{item}</a>
             ))}
+            <Link href="/pricing" onClick={() => setMobileMenuOpen(false)}
+              className="block py-2.5 text-sm" style={{ color: "hsl(215,20%,65%)", borderBottom: "1px solid hsl(222,35%,12%)" }}
+            >Pricing</Link>
             <Link href="/app" className="block text-center text-sm font-semibold px-4 py-3 rounded-xl mt-2" style={{ background: "#10b981", color: "white" }}>
               Try it free →
             </Link>
@@ -216,7 +227,7 @@ export default function LandingPage() {
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm mb-8"
             style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.25)", color: "#34d399" }}>
             <Sparkles className="w-3.5 h-3.5" />
-            Free for solo tradespeople — always
+            Trial version for solo tradespeople
           </div>
 
           {/* Headline */}
@@ -230,7 +241,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" style={{ color: "hsl(215,20%,65%)" }}>
-            ForgeCost calculates your exact material costs, applies your markup, and generates a professional PDF quote — in under 2 minutes. Free forever.
+            ForgeCost calculates your exact material costs, applies your markup, and generates a professional PDF quote — in under 2 minutes. No more guesswork, no more lost profits.
           </p>
 
           {/* CTAs */}
@@ -608,7 +619,7 @@ export default function LandingPage() {
               <span className="font-bold">Forge<span style={{ color: "#34d399" }}>Cost</span></span>
             </div>
             <p className="text-xs text-center" style={{ color: "hsl(215,20%,40%)" }}>
-              © 2026 ForgeCost · Free material cost calculator for tradespeople
+              © 2026 ForgeCost · Material cost calculator for tradespeople
             </p>
             <div className="flex items-center gap-5 text-xs" style={{ color: "hsl(215,20%,45%)" }}>
               <Link href="/privacy"
@@ -622,6 +633,11 @@ export default function LandingPage() {
                 onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(215,20%,45%)")}
               >Terms</Link>
               <Link href="/app" style={{ color: "#34d399" }}>Open App →</Link>
+              <Link href="/pricing"
+                className="transition-colors"
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#34d399")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(215,20%,45%)")}
+              >Pricing</Link>
             </div>
           </div>
         </div>

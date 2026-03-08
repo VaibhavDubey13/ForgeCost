@@ -38,6 +38,8 @@ import UpgradeModal from "@/components/UpgradeModal";
 import BrandingModal, { type BrandingSettings } from "@/components/BrandingModal";
 import ShareButton from "@/components/ShareButton";
 
+import OnboardingWalkthrough, { useOnboarding } from "@/components/OnboardingWalkthrough";
+import { ProBanner } from "@/components/ProNudge";
 
 
 const TRADE_ICONS: Record<Trade, React.ReactNode> = {
@@ -80,6 +82,7 @@ function StatCard({ label, value, accent = false, large = false }: {
 type DrawerTab = "templates" | "history" | null;
 
 export default function ForgeCostPage() {
+  const onboarding = useOnboarding();
   const [selectedTrade, setSelectedTrade] = useState<Trade>("Plumber");
   const [tradeDropdownOpen, setTradeDropdownOpen] = useState(false);
   const [jobName, setJobName] = useState("");
@@ -495,6 +498,15 @@ if (user && userProfile && !isPro(userProfile)) {
         </div>
       </header>
 
+      {/* Pro upgrade banner — shows when ≤2 free quotes remain */}
+      {user && userProfile && !isPro(userProfile) && (
+        <ProBanner
+          quotesUsed={userProfile.quotes_used ?? 0}
+          quotesLimit={5}
+          onUpgrade={() => setUpgradeModalOpen(true)}
+        />
+      )}
+
       {/* Drawer: Templates / History */}
       {drawerTab && (
         <div style={{ background: "hsl(222,40%,8%)", borderBottom: "1px solid hsl(222,35%,14%)" }}>
@@ -782,7 +794,7 @@ if (user && userProfile && !isPro(userProfile)) {
 
       <footer style={{ borderTop: "1px solid hsl(222,35%,14%)" }} className="py-8 text-center">
         <p className="text-xs mb-3" style={{ color: "hsl(215,20%,55%)" }}>
-          ForgeCost — Free for solo tradespeople. <span style={{ color: "#34d399" }}>Built to help you earn more.</span>
+          ForgeCost — for solo tradespeople. <span style={{ color: "#34d399" }}>Built to help you earn more.</span>
         </p>
         <div className="flex items-center justify-center gap-5 text-xs" style={{ color: "hsl(215,20%,45%)" }}>
           <Link href="/privacy"
@@ -800,6 +812,11 @@ if (user && userProfile && !isPro(userProfile)) {
           </Link>
         </div>
       </footer>
+
+      {/* Onboarding walkthrough — first visit only */}
+      {onboarding.show && (
+        <OnboardingWalkthrough onComplete={onboarding.complete} onSkip={onboarding.skip} />
+      )}
     </div>
   );
 }
@@ -956,7 +973,7 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
     )}
 
     <div className="rounded-xl p-4 space-y-2" style={{ border: "1px solid hsl(222,35%,16%)", background: "hsl(222,40%,9%)" }}>
-      {["✓  100% free plan available", "✓  PDF generated in your browser", "✓  Your data never leaves your device"].map((t) => (
+      {["✓ free trial available", "✓  PDF generated in your browser", "✓  Your data never leaves your device"].map((t) => (
         <p key={t} className="text-xs" style={{ color: "hsl(215,20%,55%)" }}>{t}</p>
       ))}
     </div>
