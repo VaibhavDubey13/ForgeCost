@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
 </html>`;
 
     const { data, error } = await resend.emails.send({
-      from: "ForgeCost Quotes <onboarding@resend.dev>",
+      from: "ForgeCost Quotes <quotes@mathonymics.in>",
       to: customerEmail,
       subject: `Quote for ${jobName}${companyName ? ` from ${companyName}` : ""}`,
       html,
