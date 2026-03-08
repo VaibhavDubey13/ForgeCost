@@ -36,7 +36,7 @@ export default function EmailQuoteModal({
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/email/quote", {
+      const res = await fetch("/api/dodo/email/quote",{
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
