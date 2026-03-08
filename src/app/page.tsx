@@ -31,7 +31,7 @@ const TESTIMONIALS = [
     name: "Marcus T.",
     trade: "Plumber",
     location: "Austin, TX",
-    text: "I used to guess my material costs and always came up short. MatCost changed that — I quoted a bathroom remodel last week and made $400 more than I normally would.",
+    text: "I used to guess my material costs and always came up short. ForgeCost changed that — I quoted a bathroom remodel last week and made $400 more than I normally would.",
     stars: 5,
   },
   {
@@ -193,7 +193,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed" style={{ color: "hsl(215,20%,65%)" }}>
-            MatCost helps plumbers, electricians, and other tradespeople calculate exact material costs, apply markup, and generate professional PDF quotes — in under 2 minutes.
+            ForgeCost helps plumbers, electricians, and other tradespeople calculate exact material costs, apply markup, and generate professional PDF quotes — in under 2 minutes.
           </p>
 
           {/* CTAs */}
@@ -222,7 +222,7 @@ export default function LandingPage() {
               <div style={{ background: "#0f172a", padding: "24px 32px 20px" }}>
                 <div className="flex items-end justify-between">
                   <div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#10b981", letterSpacing: 1 }}>MATCOST</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#10b981", letterSpacing: 1 }}>ForgeCost</div>
                     <div style={{ fontSize: 10, color: "#94a3b8", marginTop: 2 }}>PLUMBER MATERIAL QUOTE</div>
                   </div>
                   <div style={{ textAlign: "right", fontSize: 9, color: "#94a3b8" }}>March 8, 2026</div>
@@ -390,7 +390,7 @@ export default function LandingPage() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs mb-4" style={{ background: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.2)", color: "#34d399" }}>
             TESTIMONIALS
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Tradespeople love MatCost</h2>
+          <h2 className="text-3xl sm:text-4xl font-bold mb-4">Tradespeople love ForgeCost</h2>
           <div className="flex items-center justify-center gap-1 mb-4">
             {[...Array(5)].map((_, i) => <Star key={i} className="w-5 h-5" style={{ color: "#fbbf24", fill: "#fbbf24" }} />)}
             <span className="ml-2 text-sm" style={{ color: "hsl(215,20%,55%)" }}>5.0 from early users</span>
@@ -426,7 +426,7 @@ export default function LandingPage() {
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">Free. Forever.</h2>
           <p className="text-lg mb-10" style={{ color: "hsl(215,20%,55%)" }}>
-            No credit card. No trial. No catch. MatCost is completely free for solo tradespeople.
+            No credit card. No trial. No catch. ForgeCost is completely free for solo tradespeople.
           </p>
 
           <div className="rounded-2xl p-8 text-left mb-8" style={{ border: "1px solid rgba(16,185,129,0.25)", background: "rgba(16,185,129,0.05)" }}>
@@ -471,7 +471,7 @@ export default function LandingPage() {
             <span className="font-bold">Mat<span style={{ color: "#34d399" }}>Cost</span></span>
           </div>
           <p className="text-sm" style={{ color: "hsl(215,20%,45%)" }}>
-            © 2026 MatCost · Free material cost calculator for tradespeople
+            © 2026 ForgeCost · Free material cost calculator for tradespeople
           </p>
           <Link href="/app" className="text-sm font-medium" style={{ color: "#34d399" }}>
             Open Calculator →
