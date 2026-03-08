@@ -10,8 +10,6 @@ import {
   Mail, Sparkles,
 } from "lucide-react";
 import ShareButton from "@/components/ShareButton";
-// Add inside the header, next to the sign in/out buttons:
-<ShareButton />
 
 function useCounter(end: number, duration = 2000, start = false) {
   const [count, setCount] = useState(0);
@@ -170,6 +168,7 @@ export default function LandingPage() {
           </div>
 
           <div className="hidden md:flex items-center gap-3">
+            <ShareButton />
             <Link href="/app"
               className="text-sm font-semibold px-5 py-2.5 rounded-xl transition-all flex items-center gap-2"
               style={{ background: "#10b981", color: "white", boxShadow: "0 4px 14px rgba(16,185,129,0.3)" }}
@@ -195,6 +194,9 @@ export default function LandingPage() {
             <Link href="/app" className="block text-center text-sm font-semibold px-4 py-3 rounded-xl mt-2" style={{ background: "#10b981", color: "white" }}>
               Try it free →
             </Link>
+            <div className="flex justify-center pt-1">
+              <ShareButton variant="full" />
+            </div>
           </div>
         )}
       </nav>

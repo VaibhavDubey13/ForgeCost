@@ -37,8 +37,6 @@ import {
 import UpgradeModal from "@/components/UpgradeModal";
 import BrandingModal, { type BrandingSettings } from "@/components/BrandingModal";
 import ShareButton from "@/components/ShareButton";
-// Add inside the header, next to the sign in/out buttons:
-<ShareButton />
 
 
 
@@ -467,6 +465,7 @@ if (user && userProfile && !isPro(userProfile)) {
                     <Settings2 className="w-3 h-3" /> PDF Branding
                   </button>
                 )}
+                <ShareButton />
                 <button
                   onClick={handleSignOut}
                   className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all"
@@ -479,15 +478,18 @@ if (user && userProfile && !isPro(userProfile)) {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setAuthModalOpen(true)}
-                className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full transition-all"
-                style={{ background: "#10b981", color: "white" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#059669")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "#10b981")}
-              >
-                <LogIn className="w-4 h-4" /> Sign in
-              </button>
+              <div className="flex items-center gap-2">
+                <ShareButton />
+                <button
+                  onClick={() => setAuthModalOpen(true)}
+                  className="flex items-center gap-1.5 text-sm font-semibold px-4 py-2 rounded-full transition-all"
+                  style={{ background: "#10b981", color: "white" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "#059669")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "#10b981")}
+                >
+                  <LogIn className="w-4 h-4" /> Sign in
+                </button>
+              </div>
             )}
           </div>
         </div>
