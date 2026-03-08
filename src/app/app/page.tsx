@@ -16,6 +16,7 @@ import { TRADES, getDefaultMaterials, calcTotals, formatCurrency, genId, type Tr
 import { downloadPdfQuote } from "@/lib/generatePdf";
 import { supabase } from "@/lib/supabase";
 import { signOut } from "@/lib/auth";
+import Link from "next/link";
 import { saveTemplate, saveQuote } from "@/lib/db";
 import type { SavedTemplate } from "@/lib/supabase";
 
@@ -361,6 +362,14 @@ if (user && userProfile && !isPro(userProfile)) {
   )
 )}
 
+{brandingModalOpen && (
+  <BrandingModal
+    onClose={() => setBrandingModalOpen(false)}
+    onApply={(settings) => setBrandingSettings(settings)}
+    current={brandingSettings}
+  />
+)}
+
 {emailModalOpen && (
   <EmailQuoteModal
     onClose={() => setEmailModalOpen(false)}
@@ -380,14 +389,6 @@ if (user && userProfile && !isPro(userProfile)) {
       setUpgradeReason("branding");
       setUpgradeModalOpen(true);
     }}
-  />
-)}
-
-{brandingModalOpen && (
-  <BrandingModal
-    onClose={() => setBrandingModalOpen(false)}
-    onApply={(settings) => setBrandingSettings(settings)}
-    current={brandingSettings}
   />
 )}
 
@@ -452,7 +453,6 @@ if (user && userProfile && !isPro(userProfile)) {
                     >PRO</span>
                   )}
                 </div>                
-                {/* PDF Branding button — Pro only */}
                 {isPro(userProfile) && (
                   <button
                     onClick={() => setBrandingModalOpen(true)}
@@ -776,9 +776,24 @@ if (user && userProfile && !isPro(userProfile)) {
       </main>
 
       <footer style={{ borderTop: "1px solid hsl(222,35%,14%)" }} className="py-8 text-center">
-        <p className="text-xs" style={{ color: "hsl(215,20%,55%)" }}>
+        <p className="text-xs mb-3" style={{ color: "hsl(215,20%,55%)" }}>
           ForgeCost — Free for solo tradespeople. <span style={{ color: "#34d399" }}>Built to help you earn more.</span>
         </p>
+        <div className="flex items-center justify-center gap-5 text-xs" style={{ color: "hsl(215,20%,45%)" }}>
+          <Link href="/privacy"
+            className="transition-colors"
+            onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "#34d399")}
+            onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "hsl(215,20%,45%)")}>
+            Privacy Policy
+          </Link>
+          <span style={{ color: "hsl(222,35%,22%)" }}>·</span>
+          <Link href="/terms"
+            className="transition-colors"
+            onMouseEnter={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "#34d399")}
+            onMouseLeave={(e: React.MouseEvent<HTMLAnchorElement>) => (e.currentTarget.style.color = "hsl(215,20%,45%)")}>
+            Terms of Service
+          </Link>
+        </div>
       </footer>
     </div>
   );
@@ -789,7 +804,7 @@ function TotalsPanel({ subtotal, markupPct, markupAmount, grandTotal, onDownload
   onDownload: () => void; pdfLoading: boolean; saveQuoteLoading: boolean;
   activeMaterialCount: number; user: SupabaseUser | null;
   userProfile: UserProfile | null;
-  onAuthClick: () => void;
+  onAuthClick: () => void; 
   onUpgradeClick: (reason: "quotes" | "templates" | "history" | "branding") => void;
   onEmailClick: () => void;
   onBrandingClick: () => void;
