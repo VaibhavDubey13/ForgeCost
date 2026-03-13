@@ -1,19 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { createClient } from "@supabase/supabase-js";
 import {
   Users, Crown, FileText, MessageSquare,
   TrendingUp, RefreshCw, LogOut, Lock,
   Star, Calendar, Mail, Briefcase,
 } from "lucide-react";
 
-// Use service role for admin reads — set NEXT_PUBLIC_SUPABASE_SERVICE_ROLE in env
-// For security, ideally this is an API route. But for a solo founder dashboard this is fine.
-const adminSupabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, // reads profiles via RLS (we'll use service role via API route)
-);
+
 
 interface Profile {
   id: string;
@@ -69,14 +63,17 @@ export default function AdminPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const [{ data: profileData }, { data: feedbackData }] = await Promise.all([
-      adminSupabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      adminSupabase.from("feedback").select("*").order("created_at", { ascending: false }),
-    ]);
-    if (profileData) setProfiles(profileData as Profile[]);
-    if (feedbackData) setFeedback(feedbackData as FeedbackItem[]);
-    setLastRefresh(new Date());
-    setLoading(false);
+    try {
+      const res = await fetch("/api/admin-data");
+      const data = await res.json();
+      if (data.profiles) setProfiles(data.profiles as Profile[]);
+      if (data.feedback) setFeedback(data.feedback as FeedbackItem[]);
+      setLastRefresh(new Date());
+    } catch (err) {
+      console.error("Failed to fetch admin data:", err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
