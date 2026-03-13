@@ -4,10 +4,8 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Users, Crown, FileText, MessageSquare,
   TrendingUp, RefreshCw, LogOut, Lock,
-  Star, Calendar, Mail, Briefcase,
+  Star, Calendar, Mail, Briefcase, BarChart2,
 } from "lucide-react";
-
-
 
 interface Profile {
   id: string;
@@ -54,7 +52,6 @@ export default function AdminPage() {
   const [authed, setAuthed] = useState(false);
   const [pw, setPw] = useState("");
   const [pwError, setPwError] = useState("");
-
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [feedback, setFeedback] = useState<FeedbackItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -109,17 +106,15 @@ export default function AdminPage() {
     setAuthed(false);
   }
 
-  // ── Stats ──────────────────────────────────────────────────────────────────
-  const totalUsers    = profiles.length;
-  const proUsers      = profiles.filter((p) => p.subscription_status === "pro").length;
-  const freeUsers     = totalUsers - proUsers;
-  const totalQuotes   = profiles.reduce((sum, p) => sum + (p.quotes_used ?? 0), 0);
-  const mrr           = proUsers * 15;
-  const avgRating     = feedback.filter((f) => f.rating).length
+  const totalUsers  = profiles.length;
+  const proUsers    = profiles.filter((p) => p.subscription_status === "pro").length;
+  const freeUsers   = totalUsers - proUsers;
+  const totalQuotes = profiles.reduce((sum, p) => sum + (p.quotes_used ?? 0), 0);
+  const mrr         = proUsers * 15;
+  const avgRating   = feedback.filter((f) => f.rating).length
     ? (feedback.filter((f) => f.rating).reduce((s, f) => s + (f.rating ?? 0), 0) / feedback.filter((f) => f.rating).length).toFixed(1)
     : "—";
 
-  // ── Login screen ───────────────────────────────────────────────────────────
   if (!authed) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4"
@@ -136,7 +131,6 @@ export default function AdminPage() {
               <p className="text-xs" style={{ color: "hsl(215,20%,55%)" }}>ForgeCost</p>
             </div>
           </div>
-
           <div className="space-y-3">
             <div>
               <label className="block text-xs uppercase tracking-widest mb-1.5" style={{ color: "hsl(215,20%,55%)" }}>
@@ -154,9 +148,7 @@ export default function AdminPage() {
                 onBlur={(e) => (e.currentTarget.style.borderColor = "hsl(222,35%,18%)")}
               />
             </div>
-            {pwError && (
-              <p className="text-xs" style={{ color: "#f87171" }}>{pwError}</p>
-            )}
+            {pwError && <p className="text-xs" style={{ color: "#f87171" }}>{pwError}</p>}
             <button onClick={handleLogin}
               className="w-full font-bold py-3 rounded-xl transition-all"
               style={{ background: "#10b981", color: "white" }}
@@ -171,11 +163,8 @@ export default function AdminPage() {
     );
   }
 
-  // ── Dashboard ──────────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen" style={{ backgroundColor: "hsl(222,47%,6%)", color: "hsl(210,40%,96%)" }}>
-
-      {/* Header */}
       <header style={{ borderBottom: "1px solid hsl(222,35%,14%)", background: "hsl(222,47%,5%)" }}>
         <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div>
@@ -187,14 +176,25 @@ export default function AdminPage() {
             )}
           </div>
           <div className="flex items-center gap-2">
+            {/* Vercel Analytics link */}
+            <a
+              href="https://vercel.com/vaibhavdubey13/forge-cost/analytics"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all"
+              style={{ border: "1px solid rgba(16,185,129,0.3)", color: "#34d399", background: "rgba(16,185,129,0.08)" }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(16,185,129,0.15)"; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(16,185,129,0.08)"; }}
+            >
+              <BarChart2 className="w-3 h-3" /> Vercel Analytics ↗
+            </a>
             <button onClick={fetchData} disabled={loading}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all"
               style={{ border: "1px solid hsl(222,35%,18%)", color: "hsl(215,20%,55%)", background: "hsl(222,40%,9%)" }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "white")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "hsl(215,20%,55%)")}
             >
-              <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} />
-              Refresh
+              <RefreshCw className={`w-3 h-3 ${loading ? "animate-spin" : ""}`} /> Refresh
             </button>
             <button onClick={handleLogout}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all"
@@ -209,23 +209,15 @@ export default function AdminPage() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
-
-        {/* Tabs */}
         <div className="flex gap-1 p-1 rounded-xl w-fit" style={{ background: "hsl(222,40%,9%)", border: "1px solid hsl(222,35%,16%)" }}>
           {(["overview", "users", "feedback"] as const).map((t) => (
             <button key={t} onClick={() => setTab(t)}
               className="text-sm font-semibold px-5 py-2 rounded-lg capitalize transition-all"
-              style={{
-                background: tab === t ? "hsl(222,35%,16%)" : "transparent",
-                color: tab === t ? "white" : "hsl(215,20%,55%)",
-              }}
-            >
-              {t}
-            </button>
+              style={{ background: tab === t ? "hsl(222,35%,16%)" : "transparent", color: tab === t ? "white" : "hsl(215,20%,55%)" }}
+            >{t}</button>
           ))}
         </div>
 
-        {/* ── Overview tab ── */}
         {tab === "overview" && (
           <>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -241,7 +233,34 @@ export default function AdminPage() {
               <StatCard icon={<Mail className="w-4 h-4" />} label="With Email Contact" value={feedback.filter(f => f.email).length} sub="left email in feedback" />
             </div>
 
-            {/* Recent signups */}
+            {/* Vercel Analytics banner */}
+            <div className="rounded-2xl p-5 flex items-center justify-between gap-4"
+              style={{ background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.2)" }}>
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl flex items-center justify-center"
+                  style={{ background: "rgba(16,185,129,0.15)" }}>
+                  <BarChart2 className="w-4 h-4" style={{ color: "#34d399" }} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-white">Visitor Analytics</p>
+                  <p className="text-xs" style={{ color: "hsl(215,20%,55%)" }}>
+                    Page views, unique visitors, top pages — powered by Vercel Analytics
+                  </p>
+                </div>
+              </div>
+              <a
+                href="https://vercel.com/vaibhavdubey13/forge-cost/analytics"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-xl transition-all"
+                style={{ background: "#10b981", color: "white" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#059669")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "#10b981")}
+              >
+                View Analytics ↗
+              </a>
+            </div>
+
             <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid hsl(222,35%,16%)", background: "hsl(222,40%,9%)" }}>
               <div className="px-5 py-4" style={{ borderBottom: "1px solid hsl(222,35%,14%)" }}>
                 <h2 className="font-semibold text-white text-sm">Recent signups</h2>
@@ -280,18 +299,13 @@ export default function AdminPage() {
           </>
         )}
 
-        {/* ── Users tab ── */}
         {tab === "users" && (
           <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid hsl(222,35%,16%)", background: "hsl(222,40%,9%)" }}>
             <div className="px-5 py-4 flex items-center justify-between" style={{ borderBottom: "1px solid hsl(222,35%,14%)" }}>
               <h2 className="font-semibold text-white text-sm">All users ({totalUsers})</h2>
               <div className="flex gap-2">
-                <span className="text-xs px-2 py-1 rounded-full" style={{ background: "rgba(16,185,129,0.1)", color: "#34d399" }}>
-                  {freeUsers} free
-                </span>
-                <span className="text-xs px-2 py-1 rounded-full" style={{ background: "rgba(251,191,36,0.1)", color: "#fbbf24" }}>
-                  {proUsers} pro
-                </span>
+                <span className="text-xs px-2 py-1 rounded-full" style={{ background: "rgba(16,185,129,0.1)", color: "#34d399" }}>{freeUsers} free</span>
+                <span className="text-xs px-2 py-1 rounded-full" style={{ background: "rgba(251,191,36,0.1)", color: "#fbbf24" }}>{proUsers} pro</span>
               </div>
             </div>
             <div className="overflow-x-auto">
@@ -310,24 +324,15 @@ export default function AdminPage() {
                       <td className="px-5 py-3 text-white font-medium">{p.email}</td>
                       <td className="px-5 py-3" style={{ color: "hsl(215,20%,65%)" }}>{p.full_name ?? "—"}</td>
                       <td className="px-5 py-3" style={{ color: "hsl(215,20%,65%)" }}>
-                        <span className="flex items-center gap-1.5">
-                          <Briefcase className="w-3 h-3" />
-                          {p.profession ?? "—"}
-                        </span>
+                        <span className="flex items-center gap-1.5"><Briefcase className="w-3 h-3" />{p.profession ?? "—"}</span>
                       </td>
                       <td className="px-5 py-3">
-                        {p.subscription_status === "pro" ? (
-                          <span className="text-xs px-2 py-0.5 rounded-full font-bold"
-                            style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24" }}>PRO</span>
-                        ) : (
-                          <span className="text-xs px-2 py-0.5 rounded-full"
-                            style={{ background: "rgba(16,185,129,0.1)", color: "#34d399" }}>FREE</span>
-                        )}
+                        {p.subscription_status === "pro"
+                          ? <span className="text-xs px-2 py-0.5 rounded-full font-bold" style={{ background: "rgba(251,191,36,0.15)", color: "#fbbf24" }}>PRO</span>
+                          : <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.1)", color: "#34d399" }}>FREE</span>}
                       </td>
                       <td className="px-5 py-3 text-white font-mono">{p.quotes_used ?? 0}</td>
-                      <td className="px-5 py-3 text-xs" style={{ color: "hsl(215,20%,50%)" }}>
-                        {new Date(p.created_at).toLocaleDateString()}
-                      </td>
+                      <td className="px-5 py-3 text-xs" style={{ color: "hsl(215,20%,50%)" }}>{new Date(p.created_at).toLocaleDateString()}</td>
                     </tr>
                   ))}
                   {profiles.length === 0 && (
@@ -339,7 +344,6 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* ── Feedback tab ── */}
         {tab === "feedback" && (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
@@ -355,7 +359,8 @@ export default function AdminPage() {
               )}
             </div>
             {feedback.length === 0 && (
-              <div className="rounded-2xl p-10 text-center text-sm" style={{ border: "1px solid hsl(222,35%,16%)", background: "hsl(222,40%,9%)", color: "hsl(215,20%,45%)" }}>
+              <div className="rounded-2xl p-10 text-center text-sm"
+                style={{ border: "1px solid hsl(222,35%,16%)", background: "hsl(222,40%,9%)", color: "hsl(215,20%,45%)" }}>
                 No feedback yet — widget is live though!
               </div>
             )}
@@ -371,19 +376,10 @@ export default function AdminPage() {
                         ))}
                       </div>
                     )}
-                    {f.email && (
-                      <span className="text-xs px-2 py-0.5 rounded-full"
-                        style={{ background: "rgba(16,185,129,0.1)", color: "#34d399" }}>
-                        {f.email}
-                      </span>
-                    )}
-                    {f.page && (
-                      <span className="text-xs" style={{ color: "hsl(215,20%,45%)" }}>{f.page}</span>
-                    )}
+                    {f.email && <span className="text-xs px-2 py-0.5 rounded-full" style={{ background: "rgba(16,185,129,0.1)", color: "#34d399" }}>{f.email}</span>}
+                    {f.page && <span className="text-xs" style={{ color: "hsl(215,20%,45%)" }}>{f.page}</span>}
                   </div>
-                  <span className="text-xs flex-shrink-0" style={{ color: "hsl(215,20%,45%)" }}>
-                    {new Date(f.created_at).toLocaleDateString()}
-                  </span>
+                  <span className="text-xs flex-shrink-0" style={{ color: "hsl(215,20%,45%)" }}>{new Date(f.created_at).toLocaleDateString()}</span>
                 </div>
                 <p className="text-sm leading-relaxed" style={{ color: "hsl(215,20%,80%)" }}>{f.message}</p>
               </div>
